@@ -11,11 +11,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Install PowerShell
-      - name: Set up PowerShell
-        uses: actions/setup-pwsh@v2
+        uses: actions/checkout@v3      
 
       # Publish the module
       - name: Publish module to PowerShell Gallery

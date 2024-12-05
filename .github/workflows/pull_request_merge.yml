@@ -1,0 +1,27 @@
+name: Publish PowerAzPlus Module
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  publish:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Install PowerShell
+      - name: Set up PowerShell
+        uses: actions/setup-pwsh@v2
+
+      # Publish the module
+      - name: Publish module to PowerShell Gallery
+        run: |
+          $env:PSGalleryApiKey = "${{ secrets.POWERSHELLGALLERY_API_KEY }}"
+          Publish-Module -Path ./PowerAzPlus -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey
+        shell: pwsh

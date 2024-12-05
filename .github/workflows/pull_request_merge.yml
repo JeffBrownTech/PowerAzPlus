@@ -1,4 +1,4 @@
-name: Publish PowerAzPlus Module
+name: Pull Request Merge
 
 on:
   pull_request:

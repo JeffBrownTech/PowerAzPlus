@@ -16,7 +16,7 @@ jobs:
       # Publish the module
       - name: Publish module to PowerShell Gallery
         run: |
-          Get-ChildItem -Recurse
+          "Value: ${{ github.workspace }}"
           $env:PSGalleryApiKey = "${{ secrets.POWERSHELLGALLERY_API_KEY }}"
-          Publish-Module -Path . -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey
+          Publish-Module -Path "${{ github.workspace }}/PowerAzPlus" -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey
         shell: pwsh

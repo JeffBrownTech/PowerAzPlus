@@ -22,7 +22,7 @@ jobs:
       - name: Invoke-ScriptAnalyzer
         run: |
           $result = Invoke-ScriptAnalyzer -Path .\PowerAzPlus -Recurse -Severity Warning,Error
-          if ($result -ne 0) { Write-Error $result}
+          if ($result.Count -ne 0) { Write-Error $result}
         shell: pwsh
       
       - name: Test publish to PowerShell Gallery

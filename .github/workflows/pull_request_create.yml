@@ -1,0 +1,32 @@
+name: Pull Request Create
+
+on:
+    pull_request: 
+        types:
+            - opened
+            - synchronize
+
+jobs:    
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Test-ModuleManifest
+        run: |
+          Test-ModuleManifest -Path .\PowerAzPlus\PowerAzPlus.psd1
+        shell: pwsh
+
+      - name: Invoke-ScriptAnalyzer
+        run: |
+          $result = Invoke-ScriptAnalyzer -Path .\PowerAzPlus -Recurse -Severity Warning,Error
+          if ($result.Count -ne 0) { Write-Error $result}
+        shell: pwsh
+      
+      - name: Test publish to PowerShell Gallery
+        run: |
+          $env:PSGalleryApiKey = "${{ secrets.POWERSHELLGALLERY_API_KEY }}"
+          Publish-Module -Path ./PowerAzPlus -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey -WhatIf -Verbose
+        shell: pwsh

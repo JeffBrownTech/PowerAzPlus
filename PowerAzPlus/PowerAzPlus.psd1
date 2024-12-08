@@ -12,7 +12,7 @@
 RootModule = 'PowerAzPlus.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1'
+ModuleVersion = '1.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -107,7 +107,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Initial 1.0.0 release with Help.'
+        ReleaseNotes = 'Added Import-LogicAppDefinition, switch to XML-based help file.'
 
         # Prerelease string of this module
         # Prerelease = ''

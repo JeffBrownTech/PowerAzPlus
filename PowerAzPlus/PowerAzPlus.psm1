@@ -73,8 +73,7 @@ function Import-LogicAppDefinition {
         [string]
         $ResourceGroupName,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('FullName')]
+        [Parameter(Mandatory)]
         [ValidateScript(
             {
                 if (Test-Path -Path $_) { $true } else { $false }

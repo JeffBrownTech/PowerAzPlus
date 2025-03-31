@@ -115,7 +115,7 @@ function Get-VnetAddressSpace {
     )
 
     # Get subscriptions based on parameter set
-    $allSubs = if ($PSCmdlet.ParameterSetName -eq "AllSubscriptions") {
+    $allSubs = if ($AllSubscriptions) {
         Get-AzSubscription -WarningAction SilentlyContinue | Where-Object State -EQ 'Enabled'
     }
     else {

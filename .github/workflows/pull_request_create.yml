@@ -22,7 +22,7 @@ jobs:
       - name: Invoke-ScriptAnalyzer
         run: |
           $result = Invoke-ScriptAnalyzer -Path . -Severity Warning,Error
-          if ($result.Count -ne 0) { Write-Error $result}
+          if ($result.Count -ne 0) { Write-Output $result; exit 1}
         shell: pwsh
       
       - name: Test publish to PowerShell Gallery

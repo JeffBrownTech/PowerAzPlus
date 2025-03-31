@@ -18,13 +18,13 @@ Import-LogicAppDefinition [-Name] <String> [-ResourceGroupName] <String> [-FileN
 ```
 
 ## DESCRIPTION
-The `Export-LogicAppDefinition` function imports the definition from a JSON and overwrites an existing Logic Apps' workflow definition.
+The \`Export-LogicAppDefinition\` function imports the definition from a JSON and overwrites an existing Logic Apps' workflow definition.
 The Logic App Name and Resource Group must be specific.
 
 ## EXAMPLES
 
 ### Example 1
-```powershell
+```
 Import-LogicAppDefinition -Name mylogicapp -Resource logicapps-rg -File C:\backup\mylogicapp-export.json
 ```
 
@@ -68,12 +68,27 @@ Specifies the file name of the JSON file to import.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: FullName
+Aliases:
 
 Required: True
 Position: 2
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -83,7 +98,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.String
-
 ## OUTPUTS
 
 ### System.Object

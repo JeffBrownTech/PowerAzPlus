@@ -16,17 +16,17 @@ jobs:
 
       - name: Test-ModuleManifest
         run: |
-          Test-ModuleManifest -Path .\PowerAzPlus\PowerAzPlus.psd1
+          Test-ModuleManifest -Path .\PowerAzPlus.psd1
         shell: pwsh
 
       - name: Invoke-ScriptAnalyzer
         run: |
-          $result = Invoke-ScriptAnalyzer -Path .\PowerAzPlus -Recurse -Severity Warning,Error
-          if ($result.Count -ne 0) { Write-Error $result}
+          $result = Invoke-ScriptAnalyzer -Path . -Severity Error
+          if ($result.Count -ne 0) { Write-Output $result; exit 1}
         shell: pwsh
       
       - name: Test publish to PowerShell Gallery
         run: |
           $env:PSGalleryApiKey = "${{ secrets.POWERSHELLGALLERY_API_KEY }}"
-          Publish-Module -Path ./PowerAzPlus -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey -WhatIf -Verbose
+          Publish-Module -Path . -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey -WhatIf -Verbose
         shell: pwsh

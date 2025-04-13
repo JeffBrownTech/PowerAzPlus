@@ -132,11 +132,12 @@ function Get-VnetAddressSpace {
         (Get-AzContext).Subscription.Id
     }
 
+    $results = [System.Collections.Generic.List[PSCustomObject]]::new()
+
     foreach ($sub in $allSubs) {
         Set-AzContext -SubscriptionObject $sub -WarningAction SilentlyContinue | Out-Null
 
-        $allVnets = Get-AzVirtualNetwork
-        $results = [System.Collections.Generic.List[PSCustomObject]]::new()
+        $allVnets = Get-AzVirtualNetwork        
         
         foreach ($vnet in $allVnets) {
             $addressSpace = $vnet.AddressSpaceText

@@ -12,9 +12,9 @@ Retrieves the address space of virtual networks (VNets) across one or multiple A
 
 ## SYNTAX
 
-### Subscription (Default)
+### SubscriptionId (Default)
 ```
-Get-VnetAddressSpace [-Subscription <String[]>] [-SortByIp] [-ProgressAction <ActionPreference>]
+Get-VnetAddressSpace [-SubscriptionId <String[]>] [-SortByIp] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -23,21 +23,36 @@ Get-VnetAddressSpace [-Subscription <String[]>] [-SortByIp] [-ProgressAction <Ac
 Get-VnetAddressSpace [-AllSubscriptions] [-SortByIp] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
+### SubscriptionName
+```
+Get-VnetAddressSpace [-SubscriptionName <String[]>] [-SortByIp] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
+```
+
 ## DESCRIPTION
-The Get-VnetAddressSpace function retrieves all virtual networks and their associated address spaces in the specified Azure subscriptions. It supports querying a single subscription, multiple subscriptions, or all enabled subscriptions. The output can be sorted by IP address if desired.
+The Get-VnetAddressSpace function retrieves all virtual networks and their associated address spaces in the specified Azure subscriptions.
+It supports querying a single subscription, multiple subscriptions, or all enabled subscriptions.
+The output can be sorted by IP address if desired.
 
 ## EXAMPLES
 
 ### Example 1
-```powershell
+```
+PS C:\> Get-VnetAddressSpace
+```
+
+Retrieves the address space of all VNets in the current signed in tenant and subscription.
+
+### Example 2
+```
 PS C:\> Get-VnetAddressSpace -AllSubscriptions
 ```
 
 Retrieves the address space of all VNets across all enabled Azure subscriptions.
 
-### Example 2
-```powershell
-PS C:\> Get-VnetAddressSpace -Subscription "12345678-90ab-cdef-1234-567890abcdef","abcdef12-3456-7890-abcd-ef1234567890" -SortByIp
+### Example 3
+```
+PS C:\> Get-VnetAddressSpace -SubscriptionId "12345678-90ab-cdef-1234-567890abcdef","abcdef12-3456-7890-abcd-ef1234567890" -SortByIp
 ```
 
 Retrieves the address space of all VNets in the specified subscriptions and sorts the output by IP address.
@@ -50,6 +65,38 @@ Retrieves VNets from all enabled Azure subscriptions.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: AllSubscriptions
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SubscriptionId
+Specifies one or more Azure subscriptions by Subscription ID to retrieve VNets from.
+If omitted, the default subscription is used.
+
+```yaml
+Type: String[]
+Parameter Sets: SubscriptionId
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SubscriptionName
+Specifies one or more Azure subscriptions by Subscription Name to retrieve VNets from.
+If omitted, the default subscription is used.
+
+```yaml
+Type: String[]
+Parameter Sets: SubscriptionName
 Aliases:
 
 Required: False
@@ -69,27 +116,13 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Subscription
-Specifies one or more Azure subscriptions by Subscription ID to retrieve VNets from. If omitted, the default subscription is used.
-
-```yaml
-Type: String[]
-Parameter Sets: Subscription
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -ProgressAction
+@{Text=}
 
 ```yaml
 Type: ActionPreference
@@ -109,13 +142,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### None
-
 ## OUTPUTS
 
 ### System.Object
 ## NOTES
-Requires Azure PowerShell (`Az` module).
+Requires Azure PowerShell (\`Az\` module).
 The function sets the subscription context before retrieving VNets.
-The `SortByIp` switch converts the first octet of the IP address to an integer for sorting.
+The \`SortByIp\` switch converts the first octet of the IP address to an integer for sorting.
 
 ## RELATED LINKS

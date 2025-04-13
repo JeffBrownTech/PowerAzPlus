@@ -97,7 +97,7 @@ function Import-LogicAppDefinition {
 
 function Get-VnetAddressSpace {
     [CmdletBinding(
-        DefaultParameterSetName = "Subscription"
+        DefaultParameterSetName = "SubscriptionId"
     )]
 
     param(
@@ -105,9 +105,13 @@ function Get-VnetAddressSpace {
         [switch]
         $AllSubscriptions,
 
-        [Parameter(ParameterSetName = "Subscription")]
+        [Parameter(ParameterSetName = "SubscriptionId")]
         [string[]]
-        $Subscription,
+        $SubscriptionId,
+
+        [Parameter(ParameterSetName = "SubscriptionName")]
+        [string[]]
+        $SubscriptionName,
 
         [Parameter()]
         [switch]
@@ -115,15 +119,21 @@ function Get-VnetAddressSpace {
     )
 
     # Get subscriptions based on parameter set
-    $allSubs = if ($AllSubscriptions) {
+    $allSubs = if ($PSCmdlet.ParameterSetName -eq "AllSubscriptions") {
         Get-AzSubscription -WarningAction SilentlyContinue | Where-Object State -EQ 'Enabled'
     }
+    elseif ($PSCmdlet.ParameterSetName -eq "SubscriptionId") {
+        $SubscriptionId | ForEach-Object { Get-AzSubscription -SubscriptionId $_ -WarningAction SilentlyContinue }
+    }
+    elseif ($PSCmdlet.ParameterSetName -eq "SubscriptionName") {
+        $SubscriptionName | ForEach-Object { Get-AzSubscription -SubscriptionName $_ -WarningAction SilentlyContinue }
+    }
     else {
-        $Subscription | ForEach-Object { Get-AzSubscription -SubscriptionId $_ -WarningAction SilentlyContinue }
+        (Get-AzContext).Subscription.Id
     }
 
     foreach ($sub in $allSubs) {
-        Set-AzContext -SubscriptionObject $sub | Out-Null
+        Set-AzContext -SubscriptionObject $sub -WarningAction SilentlyContinue | Out-Null
 
         $allVnets = Get-AzVirtualNetwork
         $results = [System.Collections.Generic.List[PSCustomObject]]::new()

@@ -18,12 +18,14 @@ Import-AllKeyVaultSecrets [-VaultName] <String> [-InputFilePath] <String> [-Prog
 ```
 
 ## DESCRIPTION
-The Import-AllKeyVaultSecrets function restores all Key Vault secrets from backup files stored in a specified directory. It ensures that the target Key Vault exists before proceeding. The function processes all backup files in the provided directory and restores them to the specified Key Vault.
+The Import-AllKeyVaultSecrets function restores all Key Vault secrets from backup files stored in a specified directory.
+It ensures that the target Key Vault exists before proceeding.
+The function processes all backup files in the provided directory and restores them to the specified Key Vault.
 
 ## EXAMPLES
 
 ### Example 1
-```powershell
+```
 PS C:\> Import-AllKeyVaultSecrets -VaultName "MyKeyVault" -InputFilePath "C:\Backup\Secrets"
 ```
 
@@ -32,7 +34,8 @@ Restores all secrets from the specified directory to the "MyKeyVault" Key Vault.
 ## PARAMETERS
 
 ### -InputFilePath
-Specifies the directory containing the backup files to be restored. This parameter is required and must be a valid path.
+Specifies the directory containing the backup files to be restored.
+This parameter is required and must be a valid path.
 
 ```yaml
 Type: String
@@ -47,7 +50,8 @@ Accept wildcard characters: False
 ```
 
 ### -VaultName
-Specifies the name of the Azure Key Vault where secrets will be imported. This parameter is required.
+Specifies the name of the Azure Key Vault where secrets will be imported.
+This parameter is required.
 
 ```yaml
 Type: String
@@ -62,6 +66,7 @@ Accept wildcard characters: False
 ```
 
 ### -ProgressAction
+@{Text=}
 
 ```yaml
 Type: ActionPreference
@@ -81,12 +86,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### None
-
 ## OUTPUTS
 
 ### System.Object
 ## NOTES
-Requires Azure PowerShell (`Az` module).
+Requires Azure PowerShell (\`Az\` module).
 The target and destination Key Vaults must be in the same subscription and an Azure region within the same geography.
 The function verifies that the Key Vault exists before proceeding.
 If no backup files are found in the specified directory, a warning message is displayed.

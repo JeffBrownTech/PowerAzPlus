@@ -60,15 +60,18 @@ jobs:
           
           Write-Output "✓ All $($exportedFunctions.Count) exported functions have corresponding markdown files"
 
-      - name: Test XML Help Generation
+      - name: Generate XML Help
+        shell: pwsh
+        run: New-ExternalHelp -Path ".\docs" -OutputPath "." -Force
+
+      - name: Commit and Push Help Updates
         shell: pwsh
         run: |
-          New-ExternalHelp -Path ".\docs" -OutputPath ".\test-help" -Force
-          if (-not (Test-Path ".\test-help\PowerAzPlus-help.xml")) {
-            Write-Error "Failed to generate help XML"
-            exit 1
-          }
-          Write-Output "Help XML generated successfully"
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git add PowerAzPlus-help.xml
+          git commit -m "chore: update help documentation" || echo "No changes to help file"
+          git push
       
       - name: Test publish to PowerShell Gallery
         shell: pwsh

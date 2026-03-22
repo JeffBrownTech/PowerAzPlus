@@ -14,19 +14,66 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Test-ModuleManifest
-        run: |
-          Test-ModuleManifest -Path .\PowerAzPlus.psd1
+      - name: Install Modules
         shell: pwsh
+        run: |
+          Install-Module -Name PlatyPS -Force -Scope CurrentUser
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Test-ModuleManifest
+        shell: pwsh
+        run: Test-ModuleManifest -Path .\PowerAzPlus.psd1        
 
       - name: Invoke-ScriptAnalyzer
         run: |
           $result = Invoke-ScriptAnalyzer -Path . -Severity Error
           if ($result.Count -ne 0) { Write-Output $result; exit 1}
         shell: pwsh
+
+      - name: Validate Help Files for All Exported Functions
+        shell: pwsh
+        run: |
+          # Get exported functions from manifest
+          $manifest = Import-PowerShellDataFile -Path ".\PowerAzPlus.psd1"
+          $exportedFunctions = $manifest.FunctionsToExport
+          
+          if ($null -eq $exportedFunctions -or $exportedFunctions.Count -eq 0) {
+            Write-Error "No functions found in FunctionsToExport"
+            exit 1
+          }
+          
+          # Get markdown files
+          $markdownFiles = Get-ChildItem -Path ".\docs" -Filter "*.md" | ForEach-Object { $_.BaseName }
+          
+          # Check each function has a markdown file
+          $missingDocs = @()
+          foreach ($function in $exportedFunctions) {
+            if ($markdownFiles -notcontains $function) {
+              $missingDocs += $function
+            }
+          }
+          
+          if ($missingDocs.Count -gt 0) {
+            Write-Error "Missing markdown help files for: $($missingDocs -join ', ')"
+            exit 1
+          }
+          
+          Write-Output "✓ All $($exportedFunctions.Count) exported functions have corresponding markdown files"
+
+      - name: Test XML Help Generation
+        shell: pwsh
+        run: |
+          New-ExternalHelp -Path ".\docs" -OutputPath ".\test-help" -Force
+          if (-not (Test-Path ".\test-help\PowerAzPlus-help.xml")) {
+            Write-Error "Failed to generate help XML"
+            exit 1
+          }
+          Write-Output "Help XML generated successfully"
       
       - name: Test publish to PowerShell Gallery
-        run: |
-          $env:PSGalleryApiKey = "${{ secrets.POWERSHELLGALLERY_API_KEY }}"
-          Publish-Module -Path . -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey -WhatIf -Verbose
         shell: pwsh
+        env:
+          PSGalleryApiKey: ${{ secrets.POWERSHELLGALLERY_API_KEY }}
+        run: |
+          Publish-Module -Path . -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey -WhatIf -Verbose
+        

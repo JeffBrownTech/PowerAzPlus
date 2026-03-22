@@ -13,25 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - name: Install PlatyPS
-        shell: pwsh
-        run: Install-Module -Name PlatyPS -Force -Scope CurrentUser
-
-      - name: Generate XML Help
-        shell: pwsh
-        run: New-ExternalHelp -Path ".\docs" -OutputPath "." -Force
-
-      - name: Commit and Push Help Updates
-        shell: pwsh
-        run: |
-          git config user.email "github-actions@github.com"
-          git config user.name "GitHub Actions"
-          git add PowerAzPlus-help.xml
-          git commit -m "chore: update help documentation" || echo "No changes to help file"
-          git push
 
       - name: Publish module to PowerShell Gallery
         shell: pwsh

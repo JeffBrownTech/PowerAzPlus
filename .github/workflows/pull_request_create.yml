@@ -7,8 +7,11 @@ on:
             - synchronize
 
 jobs:    
-  test:
+  test-module:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -60,15 +63,25 @@ jobs:
           
           Write-Output "✓ All $($exportedFunctions.Count) exported functions have corresponding markdown files"
 
-      - name: Test XML Help Generation
+      - name: Generate XML Help
+        shell: pwsh
+        run: New-ExternalHelp -Path ".\docs" -OutputPath "." -Force
+
+      - name: Commit and Push Help Updates
         shell: pwsh
         run: |
-          New-ExternalHelp -Path ".\docs" -OutputPath ".\test-help" -Force
-          if (-not (Test-Path ".\test-help\PowerAzPlus-help.xml")) {
-            Write-Error "Failed to generate help XML"
-            exit 1
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git fetch origin ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          git add PowerAzPlus-help.xml
+          if (!(git diff --cached --quiet)) {
+            git commit -m "update help documentation"
+            git push origin ${{ github.head_ref }}
+          } else {
+            Write-Host "No changes to help file"
           }
-          Write-Output "Help XML generated successfully"
+        continue-on-error: true
       
       - name: Test publish to PowerShell Gallery
         shell: pwsh

@@ -72,9 +72,15 @@ jobs:
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
+          git fetch origin ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
           git add PowerAzPlus-help.xml
-          git commit -m "update help documentation" || echo "No changes to help file"
-          git push origin HEAD:${{ github.head_ref }}
+          if (!(git diff --cached --quiet)) {
+            git commit -m "update help documentation"
+            git push origin ${{ github.head_ref }}
+          } else {
+            Write-Host "No changes to help file"
+          }
         continue-on-error: true
       
       - name: Test publish to PowerShell Gallery

@@ -13,6 +13,9 @@ jobs:
             contents: write
             pull-requests: write
         steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
             - name: Install Modules
               shell: pwsh
               run: |
@@ -20,7 +23,8 @@ jobs:
 
             - name: Generate XML Help
               shell: pwsh
-              run: New-ExternalHelp -Path "./docs" -OutputPath "./src/PowerAzPlus" -Force
+              run: |
+                  New-ExternalHelp -Path "./docs" -OutputPath "./src/PowerAzPlus" -Force
 
             - name: Commit and Push Help Updates
               shell: pwsh
@@ -29,7 +33,7 @@ jobs:
                   git config user.name "GitHub Actions"
                   git fetch origin ${{ github.head_ref }}
                   git checkout ${{ github.head_ref }}
-                  git add PowerAzPlus-help.xml
+                  git add ./src/PowerAzPlus/PowerAzPlus-help.xml
                   if (!(git diff --cached --quiet)) {
                     git commit -m "update help documentation"
                     git push origin ${{ github.head_ref }}

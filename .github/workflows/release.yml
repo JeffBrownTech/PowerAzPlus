@@ -1,0 +1,62 @@
+name: 📚 Publish Module Release
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Resolve release version
+        id: version
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          $tagName = $env:TAG_NAME
+
+          if ([string]::IsNullOrWhiteSpace($tagName)) {
+            throw 'Could not determine the release tag name from the workflow context.'
+          }
+
+          $moduleVersion = $tagName
+          if ($moduleVersion -match '^[vV](?<version>.+)$') {
+            $moduleVersion = $Matches.version
+          }
+
+          $parsedVersion = $null
+          if (-not [version]::TryParse($moduleVersion, [ref]$parsedVersion)) {
+            throw "Tag '$tagName' does not map to a valid PowerShell module version. Use tags like '1.2.3' or 'v1.2.3'."
+          }
+
+          "tag_name=$tagName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "module_version=$($parsedVersion.ToString())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Update module manifest version
+        shell: pwsh
+        env:
+          MODULE_VERSION: ${{ steps.version.outputs.module_version }}
+        run: |
+          $manifestPath = Join-Path $PWD './src/PowerAzPlus/PowerAzPlus.psd1'
+          Update-ModuleManifest -Path $manifestPath -ModuleVersion $env:MODULE_VERSION -ErrorAction Stop
+
+          $manifest = Test-ModuleManifest -Path $manifestPath -ErrorAction Stop
+          if ($manifest.Version.ToString() -ne $env:MODULE_VERSION) {
+            throw "Expected manifest version '$($env:MODULE_VERSION)', but found '$($manifest.Version)'."
+          }
+
+      - name: Publish module to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGalleryApiKey: ${{ secrets.POWERSHELLGALLERY_API_KEY }}
+        run: Publish-Module -Path './src/PowerAzPlus' -Repository PSGallery -NuGetApiKey $env:PSGalleryApiKey

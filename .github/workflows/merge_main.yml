@@ -1,0 +1,34 @@
+name: 🛣️ Merge to Main
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    update-help:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+        steps:
+            - name: Generate XML Help
+              shell: pwsh
+              run: New-ExternalHelp -Path "./docs" -OutputPath "./src/PowerAzPlus" -Force
+
+            - name: Commit and Push Help Updates
+              shell: pwsh
+              run: |
+                  git config user.email "github-actions@github.com"
+                  git config user.name "GitHub Actions"
+                  git fetch origin ${{ github.head_ref }}
+                  git checkout ${{ github.head_ref }}
+                  git add PowerAzPlus-help.xml
+                  if (!(git diff --cached --quiet)) {
+                    git commit -m "update help documentation"
+                    git push origin ${{ github.head_ref }}
+                  } else {
+                    Write-Host "No changes to help file"
+                  }
+              continue-on-error: true

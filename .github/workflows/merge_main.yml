@@ -1,4 +1,4 @@
-name: 🛣️ Merge to Main
+name: Merge to Main
 
 on:
     push:
@@ -13,6 +13,11 @@ jobs:
             contents: write
             pull-requests: write
         steps:
+            - name: Install Modules
+              shell: pwsh
+              run: |
+                  Install-Module -Name platyPS -Force -Scope CurrentUser
+
             - name: Generate XML Help
               shell: pwsh
               run: New-ExternalHelp -Path "./docs" -OutputPath "./src/PowerAzPlus" -Force

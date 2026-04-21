@@ -1,4 +1,4 @@
-name: 📚 Publish Module Release
+name: Publish Module Release
 
 on:
   release:

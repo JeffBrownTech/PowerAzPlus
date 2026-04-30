@@ -7,8 +7,7 @@ function Export-AllKeyVaultSecrets {
 
         [Parameter()]
         [ValidateScript({
-                if (Test-Path -Path $_) { return $true }
-                else { return $false }
+                if (Test-Path -Path $_) { $true } else { throw "$_ is not a valid path." }
             })]
         [string]
         $OutputPath
@@ -35,8 +34,8 @@ function Export-AllKeyVaultSecrets {
 
             # Generate timestamp for filename
             $epoch = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-            $microseconds = [math]::Round(([DateTimeOffset]::UtcNow - (Get-Date "1970-01-01T00:00:00Z")).TotalMicroseconds) % 1000000
-            $timestamp = "{0}.{1}" -f $epoch, ($microseconds.ToString("000000"))
+            $microseconds = ([DateTimeOffset]::UtcNow - [DateTimeOffset]::Parse('1970-01-01T00:00:00Z')).Ticks / 10 % 1000000
+            $timestamp = "{0}.{1}" -f $epoch, $microseconds.ToString('000000')
     
             $fileName = "$OutputPath\\$secretName-$timestamp"
     

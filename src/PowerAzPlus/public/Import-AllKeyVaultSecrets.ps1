@@ -7,8 +7,7 @@ function Import-AllKeyVaultSecrets {
 
         [Parameter(Mandatory)]
         [ValidateScript({
-                if (Test-Path -Path $_) { return $true }
-                else { return $false }
+                if (Test-Path -Path $_) { $true } else { throw "$_ is not a valid path." }
             })]
         [string]
         $InputFilePath
@@ -21,7 +20,7 @@ function Import-AllKeyVaultSecrets {
         throw "Key Vault not found or invalid name: $VaultName."
     }
 
-    $backupSecretFiles = Get-ChildItem -Path $InputFilePath
+    $backupSecretFiles = @(Get-ChildItem -Path $InputFilePath)
 
     if ($backupSecretFiles.Count -gt 0) {
         foreach ($file in $backupSecretFiles) {

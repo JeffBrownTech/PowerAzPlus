@@ -8,15 +8,14 @@ function Export-LogicAppDefinition {
         [Parameter()]
         [ValidateScript(
             {
-                if (Test-Path -Path $_) { $true } else { $false }
-            },
-            ErrorMessage = "'{0}' is not a valid path."
+                if (Test-Path -Path $_) { $true } else { throw "$_ is not a valid path." }
+            }
         )]
         [string]
         $FilePath = (Get-Location),
 
         [Parameter()]
-        [ValidatePattern("\.json$", ErrorMessage = "'{0}' should have a .json file extension.")]
+        [ValidatePattern("\.json$")]
         [string]
         $FileName
     )
@@ -33,7 +32,7 @@ function Export-LogicAppDefinition {
 
             # Creating a process-loop specific variable
             if (-not $processFileName) {
-                $processFileName = "$($Name)_$(Get-Date -Format FileDateTimeUniversal).json"
+                $processFileName = "$($Name)_$((Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')).json"
             }
 
             try {
@@ -49,7 +48,7 @@ function Export-LogicAppDefinition {
                 $output
             }
             catch {
-                $errorMessage = (Get-Error -Newest 1).Exception.Message
+                $errorMessage = $_.Exception.Message
                 Write-Warning -Message "There was an issue exporting the Logic App definition for $Name : $errorMessage"
             }
             finally {
@@ -59,5 +58,5 @@ function Export-LogicAppDefinition {
         else {
             Write-Warning -Message "No Logic Apps found named $Name. Double check your spelling or current subscription context using Get-AzContext."
         }
-    } # End process lbock
+    } # End process block
 }

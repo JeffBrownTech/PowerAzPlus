@@ -12,9 +12,8 @@ function Import-LogicAppDefinition {
         [Parameter(Mandatory)]
         [ValidateScript(
             {
-                if (Test-Path -Path $_) { $true } else { $false }
-            },
-            ErrorMessage = "'{0}' is not a valid path."            
+                if (Test-Path -Path $_) { $true } else { throw "$_ is not a valid path." }
+            }         
         )]
         [string]
         $FileName
@@ -26,7 +25,7 @@ function Import-LogicAppDefinition {
         Set-AzLogicApp -Name $Name -ResourceGroupName $ResourceGroupName -DefinitionFilePath $FileName -ErrorAction STOP
     }
     catch {
-        $errorMessage = (Get-Error -Newest 1).Exception.Message
+        $errorMessage = $_.Exception.Message
         Write-Warning -Message "There was an issue importing the Logic App definition for $name : $errorMessage"
     }    
 }
